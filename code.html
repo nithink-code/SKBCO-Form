@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ITR Filing Confirmation — AY 2026-27 | SKBCO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Segoe UI',Arial,sans-serif;background:#f0f4f8;min-height:100vh;padding:1.5rem 1rem}
+.app{max-width:640px;margin:0 auto}
+
+.header{background:#0f2d5e;color:white;border-radius:14px;padding:1.25rem 1.5rem;margin-bottom:1.25rem;display:flex;align-items:center;gap:1rem}
+.header-logo{width:48px;height:48px;background:#c9a227;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#0f2d5e;flex-shrink:0}
+.header-title{font-size:17px;font-weight:600}
+.header-sub{font-size:12px;opacity:0.75;margin-top:3px}
+
+.card{background:white;border:1px solid #e2e8f0;border-radius:14px;padding:1.5rem;margin-bottom:1rem;box-shadow:0 1px 4px rgba(0,0,0,0.05)}
+.sec-label{font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.9px;margin-bottom:1rem;padding-bottom:6px;border-bottom:1px solid #f1f5f9}
+
+.field-group{margin-bottom:1.1rem}
+.field-label{font-size:13px;color:#475569;margin-bottom:5px;display:block;font-weight:500}
+.req{color:#dc2626}
+input[type=text],input[type=tel]{width:100%;padding:10px 13px;border:1.5px solid #cbd5e1;border-radius:8px;font-size:14px;font-family:inherit;color:#1e293b;outline:none;transition:border-color .15s}
+input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0 0 3px rgba(15,45,94,.1)}
+
+.meta-bar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:.25rem}
+.meta-pill{font-size:12px;padding:5px 11px;border-radius:20px;background:#f1f5f9;color:#64748b;border:1px solid #e2e8f0}
+
+/* Questions */
+.q-card{border:1.5px solid #e2e8f0;border-radius:12px;padding:1rem 1.2rem;margin-bottom:.75rem;background:#fff}
+.q-row{display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.q-num{width:22px;height:22px;min-width:22px;background:#0f2d5e;color:white;border-radius:50%;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+.q-text{font-size:13.5px;color:#1e293b;font-weight:500;line-height:1.55}
+.q-opts{display:flex;gap:8px;padding-left:30px;flex-wrap:wrap}
+.q-btn{padding:7px 18px;border-radius:20px;border:1.5px solid #cbd5e1;font-size:13px;font-family:inherit;cursor:pointer;background:#fff;color:#475569;transition:all .15s;font-weight:500}
+.q-btn:hover{border-color:#0f2d5e;color:#0f2d5e}
+.q-btn.yes-active{border-color:#c9a227;background:#fffbeb;color:#92400e;font-weight:700}
+.q-btn.no-active{border-color:#16a34a;background:#f0fdf4;color:#166534;font-weight:700}
+
+/* Declaration */
+.decl-box{background:#f8fafc;border-left:3px solid #0f2d5e;border-radius:0 10px 10px 0;padding:1.2rem;font-size:13px;line-height:2;color:#334155;margin-bottom:1.2rem;max-height:280px;overflow-y:auto}
+.decl-box p{margin-bottom:.8rem}
+.decl-box p:last-child{margin-bottom:0}
+.decl-box strong{color:#0f2d5e;font-weight:700}
+
+/* Checkboxes */
+.chk-row{display:flex;gap:10px;align-items:flex-start;padding:12px 14px;border-radius:9px;background:#fffbeb;border:1.5px solid #fde68a;margin-bottom:.65rem;transition:all .15s}
+.chk-row.ticked{background:#f0fdf4;border-color:#86efac}
+.chk-row input[type=checkbox]{width:18px;height:18px;margin-top:1px;flex-shrink:0;accent-color:#0f2d5e;cursor:pointer}
+.chk-text{font-size:13px;color:#92400e;line-height:1.6;cursor:pointer}
+.chk-row.ticked .chk-text{color:#166534}
+
+.err{font-size:12px;color:#dc2626;margin-top:5px;margin-bottom:8px;display:none;padding:6px 10px;background:#fef2f2;border-radius:6px;border:1px solid #fecaca}
+
+.submit-btn{width:100%;padding:13px;background:#0f2d5e;color:white;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:.75rem;transition:background .15s;letter-spacing:.2px}
+.submit-btn:hover{background:#1a3f7a}
+.submit-btn:disabled{opacity:.55;cursor:not-allowed}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Success */
+.success-icon{width:68px;height:68px;background:#dcfce7;border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto .75rem;font-size:30px}
+.success-title{font-size:19px;font-weight:700;color:#0f2d5e;margin-bottom:6px;text-align:center}
+.success-sub{font-size:13px;color:#64748b;line-height:1.65;text-align:center;margin-bottom:1rem}
+.success-id{font-size:12px;font-family:monospace;background:#f1f5f9;padding:6px 16px;border-radius:20px;display:block;text-align:center;color:#475569;margin-bottom:1rem}
+
+.wa-nudge{background:#f0fdf4;border:1.5px solid #86efac;border-radius:10px;padding:1rem;margin-bottom:1rem}
+.wa-nudge-title{font-size:13px;font-weight:700;color:#166534;margin-bottom:4px}
+.wa-nudge-sub{font-size:12.5px;color:#166534;line-height:1.65}
+
+.btn-row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:.75rem}
+.dl-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#0f2d5e;color:white;border:none;border-radius:9px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit}
+.reset-btn{display:inline-flex;align-items:center;gap:6px;padding:10px 20px;background:#f1f5f9;color:#475569;border:1.5px solid #e2e8f0;border-radius:9px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit}
+
+.footer{text-align:center;font-size:12px;color:#94a3b8;padding:1rem 0 2rem;line-height:1.8}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-logo">SK</div>
+    <div>
+      <div class="header-title">SKBCO — ITR Filing Confirmation</div>
+      <div class="header-sub">Shravan Kumar B & Co., Chartered Accountants · AY 2026-27</div>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <div id="formSection">
+
+    <!-- Taxpayer Info -->
+    <div class="card">
+      <div class="sec-label">Taxpayer Information</div>
+      <div class="field-group">
+        <label class="field-label">Full Name <span class="req">*</span></label>
+        <input type="text" id="clientName" placeholder="Enter your full name as per PAN" oninput="onNameInput()">
+      </div>
+      <div class="field-group" style="margin-bottom:0">
+        <label class="field-label">Mobile Number <span class="req">*</span></label>
+        <input type="tel" id="clientMobile" placeholder="10-digit mobile number" maxlength="10">
+      </div>
+      <div class="meta-bar" style="margin-top:1rem">
+        <div class="meta-pill">📅 <span id="liveDate">—</span></div>
+        <div class="meta-pill">🕐 <span id="liveTime">—</span></div>
+        <div class="meta-pill">📋 AY 2026-27 · FY 2025-26</div>
+      </div>
+    </div>
+
+    <!-- Questions -->
+    <div class="card">
+      <div class="sec-label">Client Questionnaire</div>
+      <p style="font-size:12px;color:#64748b;margin-bottom:1rem;line-height:1.6">Please answer all questions. Your responses update the declaration below.</p>
+
+      <div id="qContainer">
+        <!-- Q1 -->
+        <div class="q-card">
+          <div class="q-row"><span class="q-num">1</span><span class="q-text">Were you a Director in any company during FY 2025-26?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q1_yes" onclick="answer(1,'Yes')">Yes</button>
+            <button type="button" class="q-btn" id="q1_no"  onclick="answer(1,'No')">No</button>
+          </div>
+        </div>
+        <!-- Q2 -->
+        <div class="q-card">
+          <div class="q-row"><span class="q-num">2</span><span class="q-text">Were you a Partner in any firm during FY 2025-26?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q2_yes" onclick="answer(2,'Yes')">Yes</button>
+            <button type="button" class="q-btn" id="q2_no"  onclick="answer(2,'No')">No</button>
+          </div>
+        </div>
+        <!-- Q3 -->
+        <div class="q-card">
+          <div class="q-row"><span class="q-num">3</span><span class="q-text">Had you opted out of the New Tax Regime (i.e. were under Old Regime) in AY 2025-26?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q3_yes" onclick="answer(3,'Yes')">Yes — Old Regime</button>
+            <button type="button" class="q-btn" id="q3_no"  onclick="answer(3,'No')">No — New Regime</button>
+          </div>
+        </div>
+        <!-- Q4 -->
+        <div class="q-card">
+          <div class="q-row"><span class="q-num">4</span><span class="q-text">Have all applicable provisions, required information, and consequences of filing been explained to you by your Tax Professional to your satisfaction?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q4_yes" onclick="answer(4,'Yes')">Yes, fully explained</button>
+            <button type="button" class="q-btn" id="q4_no"  onclick="answer(4,'No')">No, need clarification</button>
+          </div>
+        </div>
+        <!-- Q5 -->
+        <div class="q-card">
+          <div class="q-row"><span class="q-num">5</span><span class="q-text">Do you consent to accept the OTP on your registered mobile/email with the Income Tax Department and authorise SKBCO to file your return?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q5_yes" onclick="answer(5,'Yes')">Yes, I consent</button>
+            <button type="button" class="q-btn" id="q5_no"  onclick="answer(5,'No')">No</button>
+          </div>
+        </div>
+        <!-- Q6 -->
+        <div class="q-card" style="margin-bottom:0">
+          <div class="q-row"><span class="q-num">6</span><span class="q-text">Have you verified the Tax Computation and confirmed the Total Income and Tax Liability figures shared with you?</span></div>
+          <div class="q-opts">
+            <button type="button" class="q-btn" id="q6_yes" onclick="answer(6,'Yes')">Yes, verified</button>
+            <button type="button" class="q-btn" id="q6_no"  onclick="answer(6,'No')">No</button>
+          </div>
+        </div>
+      </div>
+      <div class="err" id="qErr">⚠ Please answer all 6 questions before proceeding.</div>
+    </div>
+
+    <!-- Declaration -->
+    <div class="card">
+      <div class="sec-label">Declaration</div>
+      <div class="decl-box">
+        <p>I, <strong id="dName">_______________</strong>, hereby confirm and declare that I have submitted and accounted for all the necessary and relevant information, records, and documents required for the purpose of filing my Income Tax Return for the Financial Year 2025-26 (Assessment Year 2026-27) in accordance with the provisions of the Income Tax Act, 1961 and the applicable Rules and amendments thereto.</p>
+        <p>I have thoroughly reviewed all documents and details provided to my Tax Professional and affirm that, to the best of my knowledge and belief, they are true, complete, and correct. No information has been assumed, estimated, or fabricated in any manner.</p>
+        <p id="dDirector">I confirm that <strong>I was not a Director in any company</strong> during the Financial Year 2025-26.</p>
+        <p id="dPartner">I confirm that <strong>I was not a Partner in any firm</strong> during the Financial Year 2025-26.</p>
+        <p id="dRegime">With respect to the Tax Regime, I confirm that <strong>I was under the New Tax Regime</strong> in AY 2025-26 and my Tax Professional has been informed of the applicable regime for AY 2026-27.</p>
+        <p id="dExplained">I confirm that <strong>all applicable provisions, required information, and consequences of filing have been fully explained</strong> to me by my Tax Professional to my satisfaction, and I proceed with full understanding of my obligations.</p>
+        <p id="dOtp">I hereby authorise my Tax Professional to prepare and file my Income Tax Return on my behalf. I further <strong>freely consent to accept the OTP</strong> on my registered mobile/email with the Income Tax Department for the purpose of e-verification. I accept that the responsibility of correctness of data and liability from any future proceedings shall solely rest with me.</p>
+        <p id="dComputation">I confirm that <strong>I have verified the Tax Computation and confirmed the Total Income and Tax Liability</strong> figures shared with me by my Tax Professional, and I am fully satisfied with their accuracy.</p>
+        <p>I declare that I have not concealed, suppressed, or withheld any income, asset, bank account, investment, or any other material information required to be disclosed in the Income Tax Return, and I shall be solely responsible for any consequences arising from any omissions or inaccuracies, whether intentional or otherwise.</p>
+      </div>
+
+      <div class="chk-row" id="chkRow1">
+        <input type="checkbox" id="chk1" onchange="onChk(1)">
+        <span class="chk-text" onclick="document.getElementById('chk1').click()">I have read and understood the above declaration in full. I confirm that all information provided is true, complete, and correct to the best of my knowledge.</span>
+      </div>
+      <div class="chk-row" id="chkRow2">
+        <input type="checkbox" id="chk2" onchange="onChk(2)">
+        <span class="chk-text" onclick="document.getElementById('chk2').click()">I authorise SKBCO (Shravan Kumar B & Co., Chartered Accountants) to file my Income Tax Return for AY 2026-27 on my behalf.</span>
+      </div>
+      <div class="chk-row" id="chkRow3">
+        <input type="checkbox" id="chk3" onchange="onChk(3)">
+        <span class="chk-text" onclick="document.getElementById('chk3').click()">I consent to accept the OTP on my registered mobile/email with the Income Tax Department for e-verification and filing of my ITR.</span>
+      </div>
+      <div class="err" id="chkErr">⚠ Please accept all three declarations above to proceed.</div>
+
+      <button class="submit-btn" id="submitBtn" onclick="doSubmit()">Submit & Send Confirmation ›</button>
+    </div>
+
+  </div><!-- end formSection -->
+
+  <!-- SUCCESS -->
+  <div id="successSection" style="display:none">
+    <div class="card" style="padding:2rem 1.5rem">
+      <div class="success-icon">✅</div>
+      <div class="success-title">Confirmation Recorded!</div>
+      <div class="success-sub" id="successMsg">Your ITR filing confirmation has been recorded.</div>
+      <div class="success-id" id="successId">—</div>
+
+      <div class="wa-nudge">
+        <div class="wa-nudge-title" id="waStatusTitle">📲 Sending confirmation to SKBCO…</div>
+        <div class="wa-nudge-sub" id="waStatusSub">Your full report is being sent automatically via WhatsApp. No action needed.</div>
+      </div>
+
+      <div class="btn-row">
+        <button class="dl-btn" onclick="dlReport()">⬇ Download Copy</button>
+        <button class="reset-btn" onclick="doReset()">+ New Submission</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Shravan Kumar B & Co., Chartered Accountants<br>
+    Mangaluru · Kasaragod · office.skbco@gmail.com
+  </div>
+</div>
+
+<script>
+// ── CONFIG ──────────────────────────────────────
+var AY = '2026-27', FY = '2025-26';
+// Backend endpoint that talks to the WhatsApp Cloud API (see /server)
+var WA_API_URL = '/api/send-whatsapp';
+// ────────────────────────────────────────────────
+
+var answers = {q1:null,q2:null,q3:null,q4:null,q5:null,q6:null};
+var submission = null;
+
+// ── CLOCK ──
+function tick(){
+  var n=new Date();
+  var d=n.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  var t=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  document.getElementById('liveDate').textContent=d;
+  document.getElementById('liveTime').textContent=t;
+}
+tick(); setInterval(tick,30000);
+
+// ── NAME INPUT ──
+function onNameInput(){
+  var v=document.getElementById('clientName').value.trim()||'_______________';
+  document.getElementById('dName').textContent=v;
+}
+
+// ── ANSWER QUESTION ──
+function answer(n, val){
+  answers['q'+n]=val;
+  // style buttons
+  var yBtn=document.getElementById('q'+n+'_yes');
+  var nBtn=document.getElementById('q'+n+'_no');
+  yBtn.className='q-btn'+(val==='Yes'?' yes-active':'');
+  nBtn.className='q-btn'+(val==='No'?' no-active':'');
+  document.getElementById('qErr').style.display='none';
+  // update declaration paragraph
+  updateDecl(n, val);
+}
+
+// ── DECLARATION UPDATE ──
+function updateDecl(n, val){
+  var el;
+  if(n===1){
+    el=document.getElementById('dDirector');
+    if(val==='Yes') el.innerHTML='I confirm that <strong>I was a Director in one or more companies</strong> during FY 2025-26, and all relevant details have been disclosed to my Tax Professional.';
+    else el.innerHTML='I confirm that <strong>I was not a Director in any company</strong> during the Financial Year 2025-26.';
+  }
+  if(n===2){
+    el=document.getElementById('dPartner');
+    if(val==='Yes') el.innerHTML='I confirm that <strong>I was a Partner in one or more firms</strong> during FY 2025-26, and all relevant details have been disclosed to my Tax Professional.';
+    else el.innerHTML='I confirm that <strong>I was not a Partner in any firm</strong> during the Financial Year 2025-26.';
+  }
+  if(n===3){
+    el=document.getElementById('dRegime');
+    if(val==='Yes') el.innerHTML='I confirm that <strong>I had opted out of the New Tax Regime and was under the Old Tax Regime</strong> in AY 2025-26. My Tax Professional has been informed and the applicable regime for AY 2026-27 has been determined accordingly.';
+    else el.innerHTML='I confirm that <strong>I was under the New Tax Regime</strong> in AY 2025-26 and my Tax Professional has been informed of the applicable regime for AY 2026-27.';
+  }
+  if(n===4){
+    el=document.getElementById('dExplained');
+    if(val==='Yes') el.innerHTML='I confirm that <strong>all applicable provisions, required information, and consequences of filing have been fully explained</strong> to me by my Tax Professional to my satisfaction, and I proceed with full understanding of my obligations.';
+    else el.innerHTML='I confirm that <strong>certain provisions require further clarification</strong> from my Tax Professional. I undertake to seek such clarification before authorising the filing.';
+  }
+  if(n===5){
+    el=document.getElementById('dOtp');
+    if(val==='Yes') el.innerHTML='I hereby authorise my Tax Professional to prepare and file my Income Tax Return on my behalf. I further <strong>freely and voluntarily consent to accept the OTP</strong> on my registered mobile/email with the Income Tax Department for e-verification. I accept that responsibility for correctness of data and liability from any future proceedings shall solely rest with me.';
+    else el.innerHTML='I hereby authorise my Tax Professional to prepare my ITR. However, <strong>I do not consent to OTP-based e-verification at this time</strong> and will arrange alternative verification as communicated with my Tax Professional.';
+  }
+  if(n===6){
+    el=document.getElementById('dComputation');
+    if(val==='Yes') el.innerHTML='I confirm that <strong>I have duly verified the Tax Computation and confirmed the Total Income and Tax Liability</strong> figures shared with me by my Tax Professional, and I am fully satisfied with their accuracy.';
+    else el.innerHTML='I acknowledge that <strong>the Tax Computation and Total Income figures are yet to be reviewed</strong> by me. I undertake to verify the same before providing final authorisation for filing.';
+  }
+}
+
+// ── CHECKBOX TOGGLE ──
+function onChk(n){
+  var cb=document.getElementById('chk'+n);
+  var row=document.getElementById('chkRow'+n);
+  if(cb.checked) row.classList.add('ticked');
+  else row.classList.remove('ticked');
+  document.getElementById('chkErr').style.display='none';
+}
+
+// ── GENERATE ID ──
+function makeId(){
+  return 'SKBCO-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+}
+
+// ── SUBMIT ──
+function doSubmit(){
+  // 1. Validate name
+  var name=document.getElementById('clientName').value.trim();
+  if(!name){ alert('Please enter your full name.'); return; }
+
+  // 2. Validate mobile
+  var mobile=document.getElementById('clientMobile').value.trim();
+  if(!/^\d{10}$/.test(mobile)){ alert('Please enter a valid 10-digit mobile number.'); return; }
+
+  // 3. Validate all questions answered
+  for(var i=1;i<=6;i++){
+    if(!answers['q'+i]){
+      document.getElementById('qErr').style.display='block';
+      document.getElementById('qContainer').scrollIntoView({behavior:'smooth',block:'start'});
+      return;
+    }
+  }
+
+  // 4. Validate all checkboxes
+  var c1=document.getElementById('chk1').checked;
+  var c2=document.getElementById('chk2').checked;
+  var c3=document.getElementById('chk3').checked;
+  if(!c1||!c2||!c3){
+    document.getElementById('chkErr').style.display='block';
+    document.getElementById('chkErr').scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+
+  // 5. Build record
+  var n=new Date();
+  var date=n.toLocaleDateString('en-IN',{day:'2-digit',month:'long',year:'numeric'});
+  var time=n.toLocaleTimeString('en-IN',{hour:'2-digit',minute:'2-digit',hour12:true});
+  var id=makeId();
+
+  submission={
+    id:id, name:name, mobile:mobile,
+    date:date, time:time,
+    ay:AY, fy:FY,
+    q1:answers.q1, q2:answers.q2, q3:answers.q3,
+    q4:answers.q4, q5:answers.q5, q6:answers.q6
+  };
+
+  // 6. Save to localStorage
+  try{
+    var arr=JSON.parse(localStorage.getItem('skbco_records')||'[]');
+    arr.push(submission);
+    localStorage.setItem('skbco_records',JSON.stringify(arr));
+  }catch(e){}
+
+  // 7. Show success
+  document.getElementById('formSection').style.display='none';
+  document.getElementById('successSection').style.display='block';
+  document.getElementById('successMsg').textContent=
+    name+', your ITR filing confirmation for AY '+AY+' has been recorded on '+date+' at '+time+'.';
+  document.getElementById('successId').textContent='Submission ID: '+id;
+  window.scrollTo({top:0,behavior:'smooth'});
+
+  // 8. Automatically send the confirmation to SKBCO via WhatsApp API
+  sendWA();
+}
+
+// ── WHATSAPP (sent automatically via backend + WhatsApp Cloud API) ──
+function sendWA(){
+  if(!submission){ return; }
+  var titleEl=document.getElementById('waStatusTitle');
+  var subEl=document.getElementById('waStatusSub');
+
+  fetch(WA_API_URL,{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify(submission)
+  })
+  .then(function(res){ return res.json().then(function(data){ return {ok:res.ok, data:data}; }); })
+  .then(function(result){
+    if(result.ok && result.data.ok){
+      titleEl.textContent='Confirmation sent to SKBCO';
+      subEl.textContent='Your full report was delivered automatically via WhatsApp. No further action needed.';
+    }else{
+      titleEl.textContent='Could not send automatically';
+      subEl.textContent='Please contact SKBCO directly, or use the Download Copy button below and share it manually.';
+      console.error('WhatsApp send failed:', result.data);
+    }
+  })
+  .catch(function(err){
+    titleEl.textContent='Could not reach the server';
+    subEl.textContent='Please contact SKBCO directly, or use the Download Copy button below and share it manually.';
+    console.error('WhatsApp send error:', err);
+  });
+}
+
+// ── DOWNLOAD REPORT ──
+function dlReport(){
+  if(!submission){ alert('No submission found.'); return; }
+  var r=submission;
+  var L='--------------------------------------------------';
+  var lines=[
+    '==================================================',
+    'SHRAVAN KUMAR B & CO., CHARTERED ACCOUNTANTS',
+    'Mangaluru | Kasaragod | office.skbco@gmail.com',
+    '==================================================',
+    'ITR FILING CONFIRMATION REPORT',
+    'Assessment Year: '+r.ay+' | Financial Year: '+r.fy,
+    L,'',
+    'Submission ID : '+r.id,
+    'Date & Time   : '+r.date+' at '+r.time,
+    '','TAXPAYER DETAILS',L,
+    'Full Name     : '+r.name,
+    'Mobile Number : '+r.mobile,
+    '','QUESTIONNAIRE RESPONSES',L,
+    'Q1. Were you a Director in any company during FY 2025-26?',
+    '    Answer: '+r.q1,
+    'Q2. Were you a Partner in any firm during FY 2025-26?',
+    '    Answer: '+r.q2,
+    'Q3. Were you under Old Regime in AY 2025-26?',
+    '    Answer: '+r.q3,
+    'Q4. Were all provisions explained by your Tax Professional?',
+    '    Answer: '+r.q4,
+    'Q5. Do you consent to OTP and authorise SKBCO to file ITR?',
+    '    Answer: '+r.q5,
+    'Q6. Have you verified the Tax Computation?',
+    '    Answer: '+r.q6,
+    '','CONSENT DECLARATIONS',L,
+    '[YES] I have read and understood the declaration in full.',
+    '[YES] I authorise SKBCO to file my ITR for AY '+r.ay+'.',
+    '[YES] I consent to OTP for e-verification.',
+    '',L,
+    'Authorised by : '+r.name,
+    'Date          : '+r.date+' at '+r.time,
+    'Submission ID : '+r.id,
+    '=================================================='
+  ];
+  var blob=new Blob([lines.join('\n')],{type:'text/plain;charset=utf-8'});
+  var a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);
+  a.download='SKBCO_ITR_Confirmation_'+r.name.replace(/\s+/g,'_')+'_AY'+AY+'.txt';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+// ── RESET ──
+function doReset(){
+  answers={q1:null,q2:null,q3:null,q4:null,q5:null,q6:null};
+  submission=null;
+  document.getElementById('clientName').value='';
+  document.getElementById('clientMobile').value='';
+  document.getElementById('dName').textContent='_______________';
+  for(var i=1;i<=6;i++){
+    document.getElementById('q'+i+'_yes').className='q-btn';
+    document.getElementById('q'+i+'_no').className='q-btn';
+  }
+  document.getElementById('chk1').checked=false;
+  document.getElementById('chk2').checked=false;
+  document.getElementById('chk3').checked=false;
+  document.getElementById('chkRow1').classList.remove('ticked');
+  document.getElementById('chkRow2').classList.remove('ticked');
+  document.getElementById('chkRow3').classList.remove('ticked');
+  document.getElementById('qErr').style.display='none';
+  document.getElementById('chkErr').style.display='none';
+  // reset declaration paragraphs to defaults
+  document.getElementById('dDirector').innerHTML='I confirm that <strong>I was not a Director in any company</strong> during the Financial Year 2025-26.';
+  document.getElementById('dPartner').innerHTML='I confirm that <strong>I was not a Partner in any firm</strong> during the Financial Year 2025-26.';
+  document.getElementById('dRegime').innerHTML='With respect to the Tax Regime, I confirm that <strong>I was under the New Tax Regime</strong> in AY 2025-26 and my Tax Professional has been informed of the applicable regime for AY 2026-27.';
+  document.getElementById('dExplained').innerHTML='I confirm that <strong>all applicable provisions, required information, and consequences of filing have been fully explained</strong> to me by my Tax Professional to my satisfaction, and I proceed with full understanding of my obligations.';
+  document.getElementById('dOtp').innerHTML='I hereby authorise my Tax Professional to prepare and file my Income Tax Return on my behalf. I further <strong>freely consent to accept the OTP</strong> on my registered mobile/email with the Income Tax Department for the purpose of e-verification. I accept that the responsibility of correctness of data and liability from any future proceedings shall solely rest with me.';
+  document.getElementById('dComputation').innerHTML='I confirm that <strong>I have verified the Tax Computation and confirmed the Total Income and Tax Liability</strong> figures shared with me by my Tax Professional, and I am fully satisfied with their accuracy.';
+  document.getElementById('formSection').style.display='block';
+  document.getElementById('successSection').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
