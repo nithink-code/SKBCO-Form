@@ -1,1 +1,9 @@
 SKBCO WhatsApp server running on http://localhost:3000
+WhatsApp media upload error: {
+  error: {
+    message: 'Authentication Error',
+    code: 190,
+    type: 'OAuthException',
+    fbtrace_id: 'Avwj6YzLNMmVBwNdCCglTna'
+  }
+}

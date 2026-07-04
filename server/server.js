@@ -1,6 +1,7 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
+const PDFDocument = require('pdfkit');
 
 const app = express();
 app.use(cors());
@@ -12,27 +13,68 @@ app.get('/', (req, res) => {
 
 const { WHATSAPP_TOKEN, WHATSAPP_PHONE_NUMBER_ID, RECIPIENT_NUMBER, PORT } = process.env;
 
-function buildMessage(r) {
-  return '*ITR FILING CONFIRMATION — AY ' + r.ay + '*\n'
-    + '*Shravan Kumar B & Co., Chartered Accountants*\n'
-    + '────────────────────────────\n'
-    + '*Submission ID:* ' + r.id + '\n'
-    + '*Date & Time:* ' + r.date + ' at ' + r.time + '\n\n'
-    + '*Taxpayer Details*\n'
-    + '• Name: ' + r.name + '\n'
-    + '• Mobile: ' + r.mobile + '\n\n'
-    + '*Questionnaire Responses*\n'
-    + '1️⃣ Director in any company? → *' + r.q1 + '*\n'
-    + '2️⃣ Partner in any firm? → *' + r.q2 + '*\n'
-    + '3️⃣ Old Regime in AY 2025-26? → *' + r.q3 + '*\n'
-    + '4️⃣ All provisions explained? → *' + r.q4 + '*\n'
-    + '5️⃣ OTP consent given? → *' + r.q5 + '*\n'
-    + '6️⃣ Computation verified? → *' + r.q6 + '*\n\n'
-    + '*Consent Declarations*\n'
-    + '✅ Declaration read and accepted in full\n'
-    + '✅ Authorised SKBCO to file ITR for AY ' + r.ay + '\n'
-    + '✅ OTP consent given for e-verification\n\n'
-    + '_Digitally recorded via SKBCO Client Portal on ' + r.date + ' at ' + r.time + '_';
+// ── PDF GENERATION ──
+function buildPdf(r) {
+  return new Promise((resolve, reject) => {
+    const doc = new PDFDocument({ size: 'A4', margin: 50 });
+    const chunks = [];
+    doc.on('data', (c) => chunks.push(c));
+    doc.on('end', () => resolve(Buffer.concat(chunks)));
+    doc.on('error', reject);
+
+    doc.fontSize(16).font('Helvetica-Bold').text('Shravan kumar B and Co, Chartered Accountants', { align: 'center' });
+    doc.fontSize(9).font('Helvetica').fillColor('#555').text('Mangaluru | Kasaragod | office.skbco@gmail.com', { align: 'center' });
+    doc.moveDown(0.8);
+    doc.fillColor('#000').fontSize(13).font('Helvetica-Bold').text('ITR FILING CONFIRMATION REPORT', { align: 'center' });
+    doc.fontSize(10).font('Helvetica').text('Assessment Year: ' + r.ay + '  |  Financial Year: ' + r.fy, { align: 'center' });
+    doc.moveDown(1);
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor('#cccccc').stroke();
+    doc.moveDown(0.8);
+
+    doc.fontSize(10).font('Helvetica-Bold').text('Submission ID: ', { continued: true }).font('Helvetica').text(r.id);
+    doc.font('Helvetica-Bold').text('Date & Time: ', { continued: true }).font('Helvetica').text(r.date + ' at ' + r.time);
+    doc.moveDown(0.8);
+
+    doc.font('Helvetica-Bold').fontSize(11).text('Taxpayer Details');
+    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(10).text('Full Name: ' + r.name);
+    doc.text('Mobile Number: ' + r.mobile);
+    doc.moveDown(0.8);
+
+    doc.font('Helvetica-Bold').fontSize(11).text('Questionnaire Responses');
+    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(10);
+    const qs = [
+      ['Q1. Were you a Director in any company during FY 2025-26?', r.q1],
+      ['Q2. Were you a Partner in any firm during FY 2025-26?', r.q2],
+      ['Q3. Were you under Old Regime in AY 2025-26?', r.q3],
+      ['Q4. Were all provisions explained by your Tax Professional?', r.q4],
+      ['Q5. Do you consent to OTP and authorise SKBCO to file ITR?', r.q5],
+      ['Q6. Have you verified the Tax Computation?', r.q6]
+    ];
+    qs.forEach(([q, a]) => {
+      doc.font('Helvetica').text(q);
+      doc.font('Helvetica-Bold').text('Answer: ' + a);
+      doc.moveDown(0.3);
+    });
+
+    doc.moveDown(0.4);
+    doc.font('Helvetica-Bold').fontSize(11).text('Consent Declarations');
+    doc.moveDown(0.3);
+    doc.font('Helvetica').fontSize(10);
+    doc.text('[YES] I have read and understood the declaration in full.');
+    doc.text('[YES] I authorise SKBCO to file my ITR for AY ' + r.ay + '.');
+    doc.text('[YES] I consent to OTP for e-verification.');
+    doc.moveDown(1);
+
+    doc.moveTo(50, doc.y).lineTo(545, doc.y).strokeColor('#cccccc').stroke();
+    doc.moveDown(0.6);
+    doc.font('Helvetica-Bold').fontSize(10).text('Authorised by: ' + r.name);
+    doc.font('Helvetica').text('Date: ' + r.date + ' at ' + r.time);
+    doc.text('Submission ID: ' + r.id);
+
+    doc.end();
+  });
 }
 
 app.post('/api/send-whatsapp', async (req, res) => {
@@ -49,7 +91,31 @@ app.post('/api/send-whatsapp', async (req, res) => {
   }
 
   try {
-    const resp = await fetch(
+    // 1. Generate the PDF report
+    const pdfBuffer = await buildPdf(r);
+    const filename = 'SKBCO_ITR_Confirmation_' + String(r.name).replace(/\s+/g, '_') + '_AY' + r.ay + '.pdf';
+
+    // 2. Upload the PDF to WhatsApp so we get a media id
+    const form = new FormData();
+    form.append('messaging_product', 'whatsapp');
+    form.append('file', new Blob([pdfBuffer], { type: 'application/pdf' }), filename);
+
+    const uploadResp = await fetch(
+      'https://graph.facebook.com/v20.0/' + WHATSAPP_PHONE_NUMBER_ID + '/media',
+      {
+        method: 'POST',
+        headers: { 'Authorization': 'Bearer ' + WHATSAPP_TOKEN },
+        body: form
+      }
+    );
+    const uploadData = await uploadResp.json();
+    if (!uploadResp.ok || !uploadData.id) {
+      console.error('WhatsApp media upload error:', uploadData);
+      return res.status(uploadResp.status || 500).json({ ok: false, error: uploadData });
+    }
+
+    // 3. Send the uploaded PDF as a document message
+    const sendResp = await fetch(
       'https://graph.facebook.com/v20.0/' + WHATSAPP_PHONE_NUMBER_ID + '/messages',
       {
         method: 'POST',
@@ -60,21 +126,25 @@ app.post('/api/send-whatsapp', async (req, res) => {
         body: JSON.stringify({
           messaging_product: 'whatsapp',
           to: RECIPIENT_NUMBER,
-          type: 'text',
-          text: { body: buildMessage(r) }
+          type: 'document',
+          document: {
+            id: uploadData.id,
+            filename: filename,
+            caption: 'ITR Filing Confirmation — ' + r.name + ' (AY ' + r.ay + ', ID: ' + r.id + ')'
+          }
         })
       }
     );
 
-    const data = await resp.json();
-    if (!resp.ok) {
-      console.error('WhatsApp API error:', data);
-      return res.status(resp.status).json({ ok: false, error: data });
+    const sendData = await sendResp.json();
+    if (!sendResp.ok) {
+      console.error('WhatsApp API error:', sendData);
+      return res.status(sendResp.status).json({ ok: false, error: sendData });
     }
 
-    res.json({ ok: true, data });
+    res.json({ ok: true, data: sendData });
   } catch (err) {
-    console.error('Failed to send WhatsApp message:', err);
+    console.error('Failed to send WhatsApp document:', err);
     res.status(500).json({ ok: false, error: 'Failed to reach WhatsApp API' });
   }
 });

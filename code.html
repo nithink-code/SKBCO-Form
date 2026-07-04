@@ -34,8 +34,8 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
 .q-opts{display:flex;gap:8px;padding-left:30px;flex-wrap:wrap}
 .q-btn{padding:7px 18px;border-radius:20px;border:1.5px solid #cbd5e1;font-size:13px;font-family:inherit;cursor:pointer;background:#fff;color:#475569;transition:all .15s;font-weight:500}
 .q-btn:hover{border-color:#0f2d5e;color:#0f2d5e}
-.q-btn.yes-active{border-color:#c9a227;background:#fffbeb;color:#92400e;font-weight:700}
-.q-btn.no-active{border-color:#16a34a;background:#f0fdf4;color:#166534;font-weight:700}
+.q-btn.green-active{border-color:#16a34a;background:#f0fdf4;color:#166534;font-weight:700}
+.q-btn.yellow-active{border-color:#c9a227;background:#fffbeb;color:#92400e;font-weight:700}
 
 /* Declaration */
 .decl-box{background:#f8fafc;border-left:3px solid #0f2d5e;border-radius:0 10px 10px 0;padding:1.2rem;font-size:13px;line-height:2;color:#334155;margin-bottom:1.2rem;max-height:280px;overflow-y:auto}
@@ -55,6 +55,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
 .submit-btn{width:100%;padding:13px;background:#0f2d5e;color:white;border:none;border-radius:9px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;margin-top:.75rem;transition:background .15s;letter-spacing:.2px}
 .submit-btn:hover{background:#1a3f7a}
 .submit-btn:disabled{opacity:.55;cursor:not-allowed}
+.submit-hint{font-size:11.5px;color:#94a3b8;text-align:center;margin-top:8px;line-height:1.5}
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:white;border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;margin-right:6px}
 @keyframes spin{to{transform:rotate(360deg)}}
 
@@ -83,7 +84,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
     <div class="header-logo">SK</div>
     <div>
       <div class="header-title">SKBCO — ITR Filing Confirmation</div>
-      <div class="header-sub">Shravan Kumar B & Co., Chartered Accountants · AY 2026-27</div>
+      <div class="header-sub">Shravan kumar B and Co, Chartered Accountants · AY 2026-27</div>
     </div>
   </div>
 
@@ -99,7 +100,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
       </div>
       <div class="field-group" style="margin-bottom:0">
         <label class="field-label">Mobile Number <span class="req">*</span></label>
-        <input type="tel" id="clientMobile" placeholder="10-digit mobile number" maxlength="10">
+        <input type="tel" id="clientMobile" placeholder="10-digit mobile number" maxlength="10" oninput="updateSubmitState()">
       </div>
       <div class="meta-bar" style="margin-top:1rem">
         <div class="meta-pill">📅 <span id="liveDate">—</span></div>
@@ -169,7 +170,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
     <!-- Declaration -->
     <div class="card">
       <div class="sec-label">Declaration</div>
-      <div class="decl-box">
+      <div class="decl-box" id="declBox">
         <p>I, <strong id="dName">_______________</strong>, hereby confirm and declare that I have submitted and accounted for all the necessary and relevant information, records, and documents required for the purpose of filing my Income Tax Return for the Financial Year 2025-26 (Assessment Year 2026-27) in accordance with the provisions of the Income Tax Act, 1961 and the applicable Rules and amendments thereto.</p>
         <p>I have thoroughly reviewed all documents and details provided to my Tax Professional and affirm that, to the best of my knowledge and belief, they are true, complete, and correct. No information has been assumed, estimated, or fabricated in any manner.</p>
         <p id="dDirector">I confirm that <strong>I was not a Director in any company</strong> during the Financial Year 2025-26.</p>
@@ -187,7 +188,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
       </div>
       <div class="chk-row" id="chkRow2">
         <input type="checkbox" id="chk2" onchange="onChk(2)">
-        <span class="chk-text" onclick="document.getElementById('chk2').click()">I authorise SKBCO (Shravan Kumar B & Co., Chartered Accountants) to file my Income Tax Return for AY 2026-27 on my behalf.</span>
+        <span class="chk-text" onclick="document.getElementById('chk2').click()">I authorise SKBCO (Shravan kumar B and Co, Chartered Accountants) to file my Income Tax Return for AY 2026-27 on my behalf.</span>
       </div>
       <div class="chk-row" id="chkRow3">
         <input type="checkbox" id="chk3" onchange="onChk(3)">
@@ -195,7 +196,8 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
       </div>
       <div class="err" id="chkErr">⚠ Please accept all three declarations above to proceed.</div>
 
-      <button class="submit-btn" id="submitBtn" onclick="doSubmit()">Submit & Send Confirmation ›</button>
+      <button class="submit-btn" id="submitBtn" onclick="doSubmit()" disabled>Submit & Send Confirmation ›</button>
+      <div class="submit-hint" id="submitHint">Please scroll through the full declaration above and complete all questions and checkboxes to enable submission.</div>
     </div>
 
   </div><!-- end formSection -->
@@ -209,8 +211,8 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
       <div class="success-id" id="successId">—</div>
 
       <div class="wa-nudge">
-        <div class="wa-nudge-title" id="waStatusTitle">📲 Sending confirmation to SKBCO…</div>
-        <div class="wa-nudge-sub" id="waStatusSub">Your full report is being sent automatically via WhatsApp. No action needed.</div>
+        <div class="wa-nudge-title" id="waStatusTitle">📄 Generating & sending confirmation PDF…</div>
+        <div class="wa-nudge-sub" id="waStatusSub">A PDF copy of your full report is being generated and sent automatically via WhatsApp. No action needed.</div>
       </div>
 
       <div class="btn-row">
@@ -221,7 +223,7 @@ input[type=text]:focus,input[type=tel]:focus{border-color:#0f2d5e;box-shadow:0 0
   </div>
 
   <div class="footer">
-    Shravan Kumar B & Co., Chartered Accountants<br>
+    Shravan kumar B and Co, Chartered Accountants<br>
     Mangaluru · Kasaragod · office.skbco@gmail.com
   </div>
 </div>
@@ -235,6 +237,7 @@ var WA_API_URL = '/api/send-whatsapp';
 
 var answers = {q1:null,q2:null,q3:null,q4:null,q5:null,q6:null};
 var submission = null;
+var declRead = false;
 
 // ── CLOCK ──
 function tick(){
@@ -245,24 +248,31 @@ function tick(){
   document.getElementById('liveTime').textContent=t;
 }
 tick(); setInterval(tick,30000);
+checkDeclScroll(); updateSubmitState();
 
 // ── NAME INPUT ──
 function onNameInput(){
   var v=document.getElementById('clientName').value.trim()||'_______________';
   document.getElementById('dName').textContent=v;
+  updateSubmitState();
 }
 
 // ── ANSWER QUESTION ──
+// Green = affirmative-safe choice, Yellow = the other choice.
+// Q3 is inverted: "No — New Regime" is green, "Yes — Old Regime" is yellow.
 function answer(n, val){
   answers['q'+n]=val;
   // style buttons
   var yBtn=document.getElementById('q'+n+'_yes');
   var nBtn=document.getElementById('q'+n+'_no');
-  yBtn.className='q-btn'+(val==='Yes'?' yes-active':'');
-  nBtn.className='q-btn'+(val==='No'?' no-active':'');
+  var yesClass = (n===3) ? 'yellow-active' : 'green-active';
+  var noClass  = (n===3) ? 'green-active'  : 'yellow-active';
+  yBtn.className='q-btn'+(val==='Yes'?' '+yesClass:'');
+  nBtn.className='q-btn'+(val==='No'?' '+noClass:'');
   document.getElementById('qErr').style.display='none';
   // update declaration paragraph
   updateDecl(n, val);
+  updateSubmitState();
 }
 
 // ── DECLARATION UPDATE ──
@@ -307,11 +317,43 @@ function onChk(n){
   if(cb.checked) row.classList.add('ticked');
   else row.classList.remove('ticked');
   document.getElementById('chkErr').style.display='none';
+  updateSubmitState();
+}
+
+// ── DECLARATION SCROLL TRACKING ──
+function checkDeclScroll(){
+  var el=document.getElementById('declBox');
+  // also treat as read if the box isn't scrollable to begin with
+  if(el.scrollTop + el.clientHeight >= el.scrollHeight - 4){
+    declRead=true;
+    updateSubmitState();
+  }
+}
+document.getElementById('declBox').addEventListener('scroll', checkDeclScroll);
+
+// ── ENABLE/DISABLE SUBMIT BUTTON ──
+function updateSubmitState(){
+  var name=document.getElementById('clientName').value.trim();
+  var mobile=document.getElementById('clientMobile').value.trim();
+  var allAnswered=true;
+  for(var i=1;i<=6;i++){ if(!answers['q'+i]) allAnswered=false; }
+  var allChecked=document.getElementById('chk1').checked
+    && document.getElementById('chk2').checked
+    && document.getElementById('chk3').checked;
+  var ready = !!name && /^\d{10}$/.test(mobile) && allAnswered && allChecked && declRead;
+  document.getElementById('submitBtn').disabled = !ready;
+  document.getElementById('submitHint').style.display = ready ? 'none' : 'block';
 }
 
 // ── GENERATE ID ──
 function makeId(){
-  return 'SKBCO-'+Date.now().toString(36).toUpperCase()+'-'+Math.random().toString(36).substr(2,4).toUpperCase();
+  var now=new Date();
+  var yyyy=now.getFullYear();
+  var mm=String(now.getMonth()+1).padStart(2,'0');
+  var seq=parseInt(localStorage.getItem('skbcoDocSeq')||'0',10)+1;
+  localStorage.setItem('skbcoDocSeq',seq);
+  var nn=String(seq).padStart(2,'0');
+  return 'SKBCO/'+yyyy+'/'+mm+'/'+nn;
 }
 
 // ── SUBMIT ──
@@ -390,8 +432,8 @@ function sendWA(){
   .then(function(res){ return res.json().then(function(data){ return {ok:res.ok, data:data}; }); })
   .then(function(result){
     if(result.ok && result.data.ok){
-      titleEl.textContent='Confirmation sent to SKBCO';
-      subEl.textContent='Your full report was delivered automatically via WhatsApp. No further action needed.';
+      titleEl.textContent='Confirmation PDF sent to SKBCO';
+      subEl.textContent='A PDF copy of your full report was delivered automatically via WhatsApp. No further action needed.';
     }else{
       titleEl.textContent='Could not send automatically';
       subEl.textContent='Please contact SKBCO directly, or use the Download Copy button below and share it manually.';
@@ -474,6 +516,8 @@ function doReset(){
   document.getElementById('chkRow3').classList.remove('ticked');
   document.getElementById('qErr').style.display='none';
   document.getElementById('chkErr').style.display='none';
+  declRead=false;
+  document.getElementById('declBox').scrollTop=0;
   // reset declaration paragraphs to defaults
   document.getElementById('dDirector').innerHTML='I confirm that <strong>I was not a Director in any company</strong> during the Financial Year 2025-26.';
   document.getElementById('dPartner').innerHTML='I confirm that <strong>I was not a Partner in any firm</strong> during the Financial Year 2025-26.';
@@ -484,6 +528,7 @@ function doReset(){
   document.getElementById('formSection').style.display='block';
   document.getElementById('successSection').style.display='none';
   window.scrollTo({top:0,behavior:'smooth'});
+  checkDeclScroll(); updateSubmitState();
 }
 </script>
 </body>
