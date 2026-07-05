@@ -259,14 +259,14 @@ function onNameInput(){
 
 // ── ANSWER QUESTION ──
 // Green = affirmative-safe choice, Yellow = the other choice.
-// Q3 is inverted: "No — New Regime" is green, "Yes — Old Regime" is yellow.
+// Q1, Q2, Q3 are inverted: "Yes" is yellow, "No" is green.
 function answer(n, val){
   answers['q'+n]=val;
   // style buttons
   var yBtn=document.getElementById('q'+n+'_yes');
   var nBtn=document.getElementById('q'+n+'_no');
-  var yesClass = (n===3) ? 'yellow-active' : 'green-active';
-  var noClass  = (n===3) ? 'green-active'  : 'yellow-active';
+  var yesClass = (n===1||n===2||n===3) ? 'yellow-active' : 'green-active';
+  var noClass  = (n===1||n===2||n===3) ? 'green-active'  : 'yellow-active';
   yBtn.className='q-btn'+(val==='Yes'?' '+yesClass:'');
   nBtn.className='q-btn'+(val==='No'?' '+noClass:'');
   document.getElementById('qErr').style.display='none';

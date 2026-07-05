@@ -150,4 +150,4 @@ app.post('/api/send-whatsapp', async (req, res) => {
 });
 
 const port = PORT || 3000;
-app.listen(port, () => console.log('SKBCO WhatsApp server running on http://localhost:' + port));
+app.listen(port, () => console.log('SKBCO WhatsApp server listening on http://localhost:' + port));
